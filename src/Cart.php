@@ -362,7 +362,10 @@ class Cart
 
         $this->getConnection()
              ->table($this->getTableName())
-             ->where('instance', $this->currentInstance())
+             ->where([
+                ['instance', $this->currentInstance()],
+                ['identifier', $identifier]
+                ])
              ->delete();
 
         $this->getConnection()->table($this->getTableName())->insert([
