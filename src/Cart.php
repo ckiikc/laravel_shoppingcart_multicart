@@ -155,7 +155,7 @@ class Cart
         $this->events->dispatch('cart.updated', $cartItem);
 
         $this->session->put($this->instance, $content);
-
+        
         return $cartItem;
     }
 
@@ -355,11 +355,15 @@ class Cart
         $content = $this->getContent();
 
 
+        // $this->getConnection()
+        //      ->table($this->getTableName())
+        //      ->where('identifier', $identifier)
+        //      ->delete();
+
         $this->getConnection()
              ->table($this->getTableName())
-             ->where('identifier', $identifier)
+             ->where('instance', $this->currentInstance())
              ->delete();
-
 
         $this->getConnection()->table($this->getTableName())->insert([
             'identifier' => $identifier,
@@ -377,19 +381,24 @@ class Cart
      * @param mixed $identifier
      * @return void
      */
-    public function restore($identifier)
+    public function restore($identifier,$instance)
     {
         if( ! $this->storedCartWithIdentifierExists($identifier)) {
             return;
         }
 
         $stored = $this->getConnection()->table($this->getTableName())
-            ->where('identifier', $identifier)->first();
+            ->where([
+                ['identifier', $identifier],
+                ['instance', $instance]
+            ])->first();
+
+            if(!$stored) return null;
 
         $storedContent = unserialize($stored->content);
 
+        //$currentInstance = $this->currentInstance();
         $currentInstance = $this->currentInstance();
-
         $this->instance($stored->instance);
 
         $content = $this->getContent();
@@ -452,6 +461,7 @@ class Cart
      */
     protected function getContent()
     {
+
         $content = $this->session->has($this->instance)
             ? $this->session->get($this->instance)
             : new Collection;
