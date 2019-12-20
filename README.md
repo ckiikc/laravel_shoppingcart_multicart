@@ -406,10 +406,8 @@ To store your cart instance into the database, you have to call the `store($iden
 ### Restoring the cart
 If you want to retrieve the cart from the database and restore it, all you have to do is call the  `restore($identifier)` where `$identifier` is the key you specified for the `store` method.
  
-    Cart::restore('username');
+    Cart::restore('username','cartname');
     
-    // To restore a cart instance named 'wishlist'
-    Cart::instance('wishlist')->restore('username');
 
 ## Exceptions
 
